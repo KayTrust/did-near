@@ -25,7 +25,7 @@ export const createDidNearFromSecretKey = (secretKey: Uint8Array) => {
   return createDidNearFromPublicKey(keypair.publicKey);
 }
 
-export const createDidNearFromPublicKey = (publicKey: Uint8Array<ArrayBufferLike>) => {
+export const createDidNearFromPublicKey = (publicKey: Uint8Array) => {
   const publicKeyBase58 = bs58.encode(publicKey);
   return `did:near:${publicKeyBase58}`;
 }
