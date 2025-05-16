@@ -2,13 +2,6 @@ import base64url from "base64url";
 import { Signer } from "did-jwt";
 import nacl from "tweetnacl";
 
-export const privateKeyToSecretKey = (privateKey: string) => {
-    if (privateKey.startsWith("0x")) privateKey = privateKey.slice(2);
-    const privateKeyBuffer = Buffer.from(privateKey, 'hex');
-    const keypair = nacl.sign.keyPair.fromSeed(privateKeyBuffer);
-    return keypair.secretKey;
-}
-
 export const Ed25519Signer = (secretKey: Uint8Array) : Signer => async (data: string | Uint8Array): Promise<string> => {
   const messageBytes = typeof data === 'string' ? new TextEncoder().encode(data) : data;
   const signature = nacl.sign.detached(messageBytes, secretKey);

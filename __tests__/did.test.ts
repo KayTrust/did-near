@@ -1,6 +1,7 @@
 import { assert, describe, expect, test } from 'vitest'
 import base64url from "base64url";
 import { createDidNearFromPrivateKey } from '#src/helpers';
+import { NearDID } from '#src/did-near';
 
 const jwk_wallet = {
     "_id": "did:near:6Ee3RLEG5CgWEzVyQTWQKrZ4siRW6HyGDRHQmHACEGXS",
@@ -22,4 +23,10 @@ test("did:near from privateKey", () => {
     const did = createDidNearFromPrivateKey(privateKey)
     console.log("did", did)
     expect(did).toBe("did:near:6Ee3RLEG5CgWEzVyQTWQKrZ4siRW6HyGDRHQmHACEGXS");
+})
+
+test("new did:near", () => {
+    const did = new NearDID();
+    console.log("ramdom.did", did)
+    expect(did.did.startsWith("did:near")).toBe(true);
 })

@@ -1,17 +1,18 @@
 import {IssuerBaseCls, IssuerOkpAlg} from '@kaytrust/did-base'
-import { interpretIdentifier, makeDidNear } from './helpers';
+import { interpretIdentifier, makeDidNear, privateKeyToSecretKey } from './helpers';
 import { Account, keyStores, Near } from 'near-api-js';
-import { Ed25519Signer, privateKeyToSecretKey } from './signer';
+import { Ed25519Signer } from './signer';
 import { createJWT, JWTHeader, JWTVerified, verifyJWT, JWTVerifyOptions } from 'did-jwt';
 import { Resolvable } from 'did-resolver';
 
 type IssuerNear = IssuerBaseCls<IssuerOkpAlg>;
 
 interface IConfig extends Partial<Pick<IssuerNear, "signer" | "alg">> {
-  identifier: string
+  identifier?: string
   privateKey?: string
   networkId?: string
   contractId?: string
+  secretKey?: Uint8Array
 
 //   signer?: IssuerNear["signer"]
 //   alg?: 'ES256K' | 'ES256K-R'
@@ -31,9 +32,9 @@ export class NearDID extends IssuerBaseCls<IssuerOkpAlg> {
     private near?: Near;
     private contractId?: string;
 
-    constructor(conf: IConfig) {
+    constructor(conf: IConfig = {}) {
         super();
-        let { accountId, networkId, privateKey } = interpretIdentifier(conf.identifier)
+        let { accountId, networkId, secretKey } = interpretIdentifier(conf.identifier, conf.secretKey || (conf.privateKey ? privateKeyToSecretKey(conf.privateKey) : undefined))
         if (!networkId) networkId = conf.networkId;
         this.contractId = conf.contractId;
         if (conf.rpcUrl || conf.near) {
@@ -56,8 +57,8 @@ export class NearDID extends IssuerBaseCls<IssuerOkpAlg> {
                 'A JWT signer was specified but no algorithm was set. Please set the `alg` parameter when calling `new EthrDID()`'
                 )
             }
-        } else if (conf.privateKey || privateKey) {
-            this.signer = Ed25519Signer(privateKeyToSecretKey(privateKey || conf.privateKey!))
+        } else if (secretKey) {
+            this.signer = Ed25519Signer(secretKey)
             this.alg = 'EdDSA'
         }
     }

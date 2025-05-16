@@ -1,6 +1,6 @@
 {
   "name": "@kaytrust/did-near",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "source": "src/index.ts",
   "main": "lib/index.js",
   "types": "src/index.ts",
